@@ -1,15 +1,39 @@
-// "use strict";
+"use strict";
+window.onload = () => { // On load select input form. === first;
+	const input = nodes.form.querySelector('input'); // Get first input element within form.
+	const firstDiv = nodes.fieldset[3].querySelector('DIV').style.display = 'none'; // Hide the payment div
+
+	input.focus(); // Focus input.
+	input.select(); // Then select Element.
+};
 const nodeConfig = (f) => { // Traverse the DOM to select needed nodes.
 	const form = document.querySelector('FORM');
 	const fieldsetFirst = form.firstElementChild;
 	const fieldsets = form.querySelectorAll('FIELDSET');
 	const jobRole = fieldsetFirst.lastElementChild;
-	const exportNodes = { form, fieldsetFirst, jobRole, fieldset: fieldsets };
+	// const holdColorOptions = fieldsets[1].children[3];
+	const exportNodes = {
+		form,
+		fieldsetFirst,
+		jobRole,
+		fieldset: fieldsets,
+		// holdColorOptions
+	};
 	return exportNodes;
 };
 let nodes = nodeConfig(); // Save slected nodes.
 let someState = [];
-elementsToCreate = (appendLocation) => { // Create and append new input if other is selected.
+// const select = nodes.fieldset[3].querySelector('SELECT');
+
+const disabledColorShirts = (selectNode) => { // Param = the select node from { nodes.fieldset[2].color section }.
+	const newOptionNode = document.createElement('OPTION'); // Create new option node.
+	selectNode.append(newOptionNode); // append new option node.
+	newOptionNode.innerHTML = 'Select a theme first..'; // Add description.
+	newOptionNode.setAttribute('selected', true); // Set option node to show first.
+	selectNode.setAttribute('disabled', true); // Disable color box.
+};
+
+const elementsToCreate = (appendLocation) => { // Create and append new input if other is selected.
 	let newDiv = document.createElement('DIV');
 	let HTML = `
   <label for="other-title">Other Job Role</label>
@@ -23,7 +47,7 @@ elementsToCreate = (appendLocation) => { // Create and append new input if other
 // If the user selects "Theme - I ♥ JS"
 // then the color menu should only display "Tomato," "Steel Blue," and "Dim Grey."
 
-jobRoleSelection = (e) => {
+const jobRoleSelection = (e) => {
 	let otherValue = e.target.value === 'other';
 	let appendedDiv = nodes.fieldsetFirst.lastElementChild;
 	if (otherValue) {
@@ -50,15 +74,23 @@ const handleColors = (colors, brand) => {
 		}
 	}
 };
-
-handleShirtSelect = (e) => {
-	let shirt = e.target.value;
-	if (shirt === 'heart js') {
+const handleShirtSelect = (e) => {
+	let shirt = e.target.value; // Users desired shirt.
+	const selected = nodes.fieldset[1].lastElementChild.lastElementChild; // Select Node.
+	const options = nodes.fieldset[1].lastElementChild.lastElementChild.querySelectorAll('OPTION'); // Option Nodes.
+	if (selected.disabled) {
+		options[options.length - 1].remove();
+		selected.removeAttribute('disabled');
+		options[0].setAttribute('selected', true);
+	} else if (shirt === 'heart js') {
 		handleColors(nodes.fieldset[1].lastElementChild.lastElementChild, shirt);
 	} else if (shirt === 'js puns') {
 		handleColors(nodes.fieldset[1].lastElementChild.lastElementChild, shirt);
+	} else {
+		disabledColorShirts(selected);
 	}
 };
+
 const findCrossTimes = (checkTimes, btnClicked) => {
 	checkTimes = checkTimes.children;
 	const storeState = [];
@@ -107,18 +139,17 @@ const disableTimes = (timesArray) => {
 		}
 	}
 	try {
-		let checked = timesArray[timesArray.length - 1].checked || null;
+		let checked = timesArray[timesArray.length - 1].checked;
 		if (checked) {
 			timesArray[timesArray.length - 1].removeAttribute('disabled');
 			timesArray[timesArray.length - 1].parentNode.setAttribute('style', 'opacity: 1;');
 		}
 	} catch (e) {
-		console.error('This is not a error.');
+		console.error('This a problem...');
 	}
 };
 
-
-handleCrossTimes = (e) => {
+const handleCrossTimes = (e) => {
 	// console.log(e.target, e.target.value);
 	let sameTimes = e.target;
 	// console.log(e.target.parentNode.textContent.indexOf(sameTimes));
@@ -126,10 +157,37 @@ handleCrossTimes = (e) => {
 	// if (e.target.textContent.charAt('Tuesday')); {
 	console.log(times);
 	disableTimes(times);
-
-	// }
 };
 
+const handleCcSelection = (e) => {
+	const firstDiv = nodes.fieldset[3].querySelector('DIV');
+	const select = nodes.fieldset[3].querySelector('SELECT');
+	const isCC = select.value === 'credit card'; // CreditCard
+	const isPP = select.value === 'paypal'; // PayPal
+	const isBC = select.value === 'bitcoin'; // Bitcoin
+
+	if (isCC) {
+		firstDiv.style.display = 'block';
+	} else if (isPP) {
+		const url = 'https://www.paypal.com/us/home';
+		window.open(url, '_blank');
+	} else if (isBC) {
+		const url = 'https://bitcoin.org/en/';
+		window.open(url, '_blank');
+	} else {
+		firstDiv.style.display = 'none';
+	}
+	// console.log(e.target.value);
+};
+
+const onLoad = (callback) => {
+	// if (select.value !== 'select_method') {
+	// 	console.log('its not', select.value);
+	// }
+	callback.addEventListener("change", handleCcSelection, true);
+	disabledColorShirts(nodes.fieldset[1].lastElementChild.lastElementChild);
+}
+onLoad(nodes.fieldset[3]);
 
 
 
@@ -137,9 +195,3 @@ nodes.jobRole.addEventListener("change", jobRoleSelection, true);
 // const design = nodes.fieldset[1].querySelector('SELECT[id="design"]');
 nodes.fieldset[1].querySelector('SELECT[id="design"]').addEventListener("change", handleShirtSelect, true);
 nodes.fieldset[2].addEventListener("change", handleCrossTimes, true);
-
-window.onload = () => { // On load select input form. === first;
-	const input = nodes.form.querySelector('input'); // Get first input element within form.
-	input.focus(); // Focus input.
-	input.select(); // Then select Element.
-};
