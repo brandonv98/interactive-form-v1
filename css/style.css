@@ -126,6 +126,19 @@ button:hover {
   margin-top: 1.25em;
 }
 
+.total {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.total>label {
+  margin-top: .9rem;
+}
+
+.total>legend {
+  max-width: 7rem;
+}
+
 /* =================================
   Helper Classes
 ==================================== */

@@ -15,10 +15,22 @@ const nodeConfig = (f) => { // Traverse the DOM to select needed nodes.
 		fieldsetFirst,
 		jobRole,
 		fieldset: fieldsets,
+		getParent: null,
+		findParent(node, parentValue) {
+			this.getParent = node.parentNode;
+			let isSeekedParent = node.parentNode.tagName === parentValue;
+			if (isSeekedParent) {
+				return this.getParent;
+			} else {
+				this.findParent(node.parentNode, parentValue);
+			}
+		},
+		total: 0
 	};
 	return exportNodes;
 };
 let nodes = nodeConfig(); // Save slected nodes.
+
 let someState = [];
 // const select = nodes.fieldset[3].querySelector('SELECT');
 const disabledColorShirts = (selectNode) => { // Param = the select node from { nodes.fieldset[2].color section }.
@@ -35,7 +47,7 @@ const onLoad = (node) => {
 	node.addEventListener("change", handleCcSelection, true);
 	nodes.jobRole.addEventListener("change", jobRoleSelection, true);
 	nodes.fieldset[1].querySelector('SELECT[id="design"]').addEventListener("change", handleShirtSelect, true);
-	nodes.fieldset[2].addEventListener("change", handleCrossTimes, true);
+	nodes.fieldset[2].addEventListener("change", handleActivities, true);
 	disabledColorShirts(nodes.fieldset[1].lastElementChild.lastElementChild);
 }
 // ===========================================
@@ -50,9 +62,9 @@ const elementsToCreate = (appendLocation) => { // Create and append new input if
 	newDiv.innerHTML = `${HTML}`;
 };
 const jobRoleSelection = (e) => {
-	let otherValue = e.target.value === 'other';
+	let optionOther = e.target.value === 'other';
 	let appendedDiv = nodes.fieldsetFirst.lastElementChild;
-	if (otherValue) {
+	if (optionOther) {
 		elementsToCreate(nodes.fieldsetFirst);
 	} else if (appendedDiv.tagName === 'DIV') {
 		appendedDiv.remove(); // Remove old Div
@@ -100,19 +112,20 @@ const handleShirtSelect = (e) => {
 const findCrossTimes = (checkTimes, btnClicked) => {
 	checkTimes = checkTimes.children;
 	const storeState = [];
-
 	let clickedBtnLabel = btnClicked.parentNode.textContent;
 	let clickedBtnLabelFind = clickedBtnLabel.indexOf('— ');
 	let clickedBtnLabelFindChar = clickedBtnLabel.charAt(clickedBtnLabelFind);
-	const mustFindMe = clickedBtnLabel.slice(clickedBtnLabelFind, -11);
+	const timeFromClick = clickedBtnLabel.slice(clickedBtnLabelFind, -11);
 
 	for (let i = 0; i < checkTimes.length; i++) {
+
 		const strVal = checkTimes[i].textContent;
 		let startPoint = strVal.indexOf('— ');
-		let getChar = strVal.charAt(startPoint);
+		// let getChar = strVal.charAt(startPoint);
 		let finalyFind = strVal.slice(startPoint, -11);
-		if (finalyFind.includes(mustFindMe)) {
-			console.log(finalyFind.includes(mustFindMe));
+
+		if (finalyFind.includes(timeFromClick)) {
+			console.log(finalyFind.includes(timeFromClick));
 			storeState.push(checkTimes[i].firstElementChild);
 		}
 	}
@@ -123,8 +136,9 @@ const findCrossTimes = (checkTimes, btnClicked) => {
 const disableTimes = (timesArray) => {
 	let isValue = timesArray.length > 0;
 	console.log(timesArray, 'first');
-	let checked = timesArray[timesArray.length - 1].checked;
 
+
+	let checked = timesArray[timesArray.length - 1].checked;
 
 	if (!checked) {
 		console.log(someState, 'not last');
@@ -149,15 +163,32 @@ const disableTimes = (timesArray) => {
 		console.error('This a problem...');
 	}
 };
-const handleCrossTimes = (e) => {
-	// console.log(e.target, e.target.value);
-	let sameTimes = e.target;
-	// console.log(e.target.parentNode.textContent.indexOf(sameTimes));
-	const times = findCrossTimes(nodes.fieldset[2], sameTimes);
+
+const handleActivities = (e) => {
+	const checkBox = e.target;
+	let clickedBtnLabel = checkBox.parentNode.textContent;
+	let clickedBtnLabelFind = clickedBtnLabel.indexOf('$');
+	let dollarSign = clickedBtnLabel.charAt(clickedBtnLabelFind);
+	const shopCost = parseInt(clickedBtnLabel.slice(clickedBtnLabelFind + 1));
+	let parent = nodes.findParent(checkBox, 'FIELDSET');
+	parent = nodes.getParent;
+	const isDiv = parent.querySelector('DIV') === null;
+	if (isDiv) {
+		const newDiv = document.createElement('DIV');
+		parent.append(newDiv);
+		newDiv.setAttribute('class', 'total');
+	} {
+		(checkBox.checked) ? nodes.total += shopCost: nodes.total -= shopCost;
+	};
+	let HTML = `<legend>Your Total:</legend>
+							<label for="total">${dollarSign} ${nodes.total}</label> `;
+	parent.lastElementChild.innerHTML = `${HTML}`;
+	const times = findCrossTimes(parent, checkBox);
 	// if (e.target.textContent.charAt('Tuesday')); {
 	console.log(times);
 	disableTimes(times);
 };
+console.log(nodes.total);
 // ===========================================
 // ---------		Section 4	 	------------------
 // ===========================================
