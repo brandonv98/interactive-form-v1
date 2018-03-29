@@ -10,6 +10,8 @@ const nodeConfig = (f) => { // Traverse the DOM to select needed nodes.
 	const fieldsetFirst = form.firstElementChild;
 	const fieldsets = form.querySelectorAll('FIELDSET');
 	const jobRole = fieldsetFirst.lastElementChild;
+	const button = document.querySelector('BUTTON[TYPE="SUBMIT"]');
+	const allInput = document.querySelectorAll('INPUT');
 	const exportNodes = {
 		form,
 		fieldsetFirst,
@@ -25,7 +27,9 @@ const nodeConfig = (f) => { // Traverse the DOM to select needed nodes.
 				this.findParent(node.parentNode, parentValue);
 			}
 		},
-		total: 0
+		total: 0,
+		button,
+		allInput
 	};
 	return exportNodes;
 };
@@ -44,11 +48,18 @@ const disabledColorShirts = (selectNode) => { // Param = the select node from { 
 // ----------------		Event Listeners	& Start State 	-------------------------
 // ============================================================================
 const onLoad = (node) => {
-	node.addEventListener("change", handleCcSelection, true);
-	nodes.jobRole.addEventListener("change", jobRoleSelection, true);
 	nodes.fieldset[1].querySelector('SELECT[id="design"]').addEventListener("change", handleShirtSelect, true);
 	nodes.fieldset[2].addEventListener("change", handleActivities, true);
+	nodes.fieldset[3].addEventListener("change", handleCcSelection, true);
+	nodes.jobRole.addEventListener("change", jobRoleSelection, true);
 	disabledColorShirts(nodes.fieldset[1].lastElementChild.lastElementChild);
+	handleRequiredFields(nodes.allInput, 3);
+}
+
+const handleRequiredFields = (inputs, num) => {
+	for (var i = 0; i < inputs.length - num; i++) {
+		inputs[i].setAttribute('required', true);
+	}
 }
 // ===========================================
 // ---------		Section 1	 	------------------
@@ -133,18 +144,23 @@ const findCrossTimes = (checkTimes, btnClicked) => {
 	return storeState;
 };
 
-const disableTimes = (timesArray) => {
-	let isValue = timesArray.length > 0;
-	console.log(timesArray, 'first');
-
+const disableTimes = (timesArray, target) => {
+	const targetString = target.parentNode.textContent;
+	const findTime = targetString.indexOf('— ');
+	const targetTime = targetString.slice(findTime, -11);
 
 	let checked = timesArray[timesArray.length - 1].checked;
 
 	if (!checked) {
-		console.log(someState, 'not last');
 		for (let i = 0; i < someState.length; i++) {
-			someState[i].removeAttribute('disabled');
-			someState[i].parentNode.setAttribute('style', 'opacity: 1;');
+			let time = someState[i].parentNode.textContent;
+			let findTime = time.indexOf('— ');
+			let allTimes = time.slice(findTime);
+
+			if (allTimes.includes(targetTime)) {
+				someState[i].parentNode.setAttribute('style', 'opacity: 1;');
+				someState[i].removeAttribute('disabled');
+			}
 		}
 	} else if (timesArray[timesArray.length - 1].checked) {
 		for (let i = 0; i < timesArray.length; i++) {
@@ -168,8 +184,8 @@ const handleActivities = (e) => {
 	const checkBox = e.target;
 	let clickedBtnLabel = checkBox.parentNode.textContent;
 	let clickedBtnLabelFind = clickedBtnLabel.indexOf('$');
-	let dollarSign = clickedBtnLabel.charAt(clickedBtnLabelFind);
 	const shopCost = parseInt(clickedBtnLabel.slice(clickedBtnLabelFind + 1));
+	const dollarSign = clickedBtnLabel.charAt(clickedBtnLabelFind);
 	let parent = nodes.findParent(checkBox, 'FIELDSET');
 	parent = nodes.getParent;
 	const isDiv = parent.querySelector('DIV') === null;
@@ -184,9 +200,7 @@ const handleActivities = (e) => {
 							<label for="total">${dollarSign} ${nodes.total}</label> `;
 	parent.lastElementChild.innerHTML = `${HTML}`;
 	const times = findCrossTimes(parent, checkBox);
-	// if (e.target.textContent.charAt('Tuesday')); {
-	console.log(times);
-	disableTimes(times);
+	disableTimes(times, e.target);
 };
 console.log(nodes.total);
 // ===========================================
@@ -213,4 +227,4 @@ const handleCcSelection = (e) => {
 };
 
 
-onLoad(nodes.fieldset[3]);
+onLoad();
