@@ -2,7 +2,6 @@
 window.onload = () => { // On load select input form. === first;
 	const input = nodes.form.querySelector('input'); // Get first input element within form.
 	const firstDiv = nodes.fieldset[3].querySelector('DIV').style.display = 'none'; // Hide the payment div
-
 	input.focus(); // Focus input.
 	input.select(); // Then select Element.
 };
@@ -11,20 +10,17 @@ const nodeConfig = (f) => { // Traverse the DOM to select needed nodes.
 	const fieldsetFirst = form.firstElementChild;
 	const fieldsets = form.querySelectorAll('FIELDSET');
 	const jobRole = fieldsetFirst.lastElementChild;
-	// const holdColorOptions = fieldsets[1].children[3];
 	const exportNodes = {
 		form,
 		fieldsetFirst,
 		jobRole,
 		fieldset: fieldsets,
-		// holdColorOptions
 	};
 	return exportNodes;
 };
 let nodes = nodeConfig(); // Save slected nodes.
 let someState = [];
 // const select = nodes.fieldset[3].querySelector('SELECT');
-
 const disabledColorShirts = (selectNode) => { // Param = the select node from { nodes.fieldset[2].color section }.
 	const newOptionNode = document.createElement('OPTION'); // Create new option node.
 	selectNode.append(newOptionNode); // append new option node.
@@ -32,7 +28,19 @@ const disabledColorShirts = (selectNode) => { // Param = the select node from { 
 	newOptionNode.setAttribute('selected', true); // Set option node to show first.
 	selectNode.setAttribute('disabled', true); // Disable color box.
 };
-
+// ============================================================================
+// ----------------		Event Listeners	& Start State 	-------------------------
+// ============================================================================
+const onLoad = (node) => {
+	node.addEventListener("change", handleCcSelection, true);
+	nodes.jobRole.addEventListener("change", jobRoleSelection, true);
+	nodes.fieldset[1].querySelector('SELECT[id="design"]').addEventListener("change", handleShirtSelect, true);
+	nodes.fieldset[2].addEventListener("change", handleCrossTimes, true);
+	disabledColorShirts(nodes.fieldset[1].lastElementChild.lastElementChild);
+}
+// ===========================================
+// ---------		Section 1	 	------------------
+// ===========================================
 const elementsToCreate = (appendLocation) => { // Create and append new input if other is selected.
 	let newDiv = document.createElement('DIV');
 	let HTML = `
@@ -41,12 +49,6 @@ const elementsToCreate = (appendLocation) => { // Create and append new input if
 	appendLocation.appendChild(newDiv);
 	newDiv.innerHTML = `${HTML}`;
 };
-
-// If the user selects "Theme - JS Puns"
-// then the color menu should only display "Cornflower Blue," "Dark Slate Grey," and "Gold."
-// If the user selects "Theme - I ♥ JS"
-// then the color menu should only display "Tomato," "Steel Blue," and "Dim Grey."
-
 const jobRoleSelection = (e) => {
 	let otherValue = e.target.value === 'other';
 	let appendedDiv = nodes.fieldsetFirst.lastElementChild;
@@ -56,7 +58,9 @@ const jobRoleSelection = (e) => {
 		appendedDiv.remove(); // Remove old Div
 	}
 };
-
+// ===========================================
+// ---------		Section 2	 	------------------
+// ===========================================
 const handleColors = (colors, brand) => {
 	for (let i = 0; i < colors.length; i++) {
 		if (brand === 'js puns') {
@@ -90,23 +94,20 @@ const handleShirtSelect = (e) => {
 		disabledColorShirts(selected);
 	}
 };
-
+// ===========================================
+// ---------		Section 3	 	------------------
+// ===========================================
 const findCrossTimes = (checkTimes, btnClicked) => {
 	checkTimes = checkTimes.children;
 	const storeState = [];
 
 	let clickedBtnLabel = btnClicked.parentNode.textContent;
-
 	let clickedBtnLabelFind = clickedBtnLabel.indexOf('— ');
 	let clickedBtnLabelFindChar = clickedBtnLabel.charAt(clickedBtnLabelFind);
-	// console.log(clickedBtnLabel.slice(clickedBtnLabelFind, -11));
-
-
 	const mustFindMe = clickedBtnLabel.slice(clickedBtnLabelFind, -11);
 
 	for (let i = 0; i < checkTimes.length; i++) {
 		const strVal = checkTimes[i].textContent;
-
 		let startPoint = strVal.indexOf('— ');
 		let getChar = strVal.charAt(startPoint);
 		let finalyFind = strVal.slice(startPoint, -11);
@@ -148,7 +149,6 @@ const disableTimes = (timesArray) => {
 		console.error('This a problem...');
 	}
 };
-
 const handleCrossTimes = (e) => {
 	// console.log(e.target, e.target.value);
 	let sameTimes = e.target;
@@ -158,7 +158,9 @@ const handleCrossTimes = (e) => {
 	console.log(times);
 	disableTimes(times);
 };
-
+// ===========================================
+// ---------		Section 4	 	------------------
+// ===========================================
 const handleCcSelection = (e) => {
 	const firstDiv = nodes.fieldset[3].querySelector('DIV');
 	const select = nodes.fieldset[3].querySelector('SELECT');
@@ -177,21 +179,7 @@ const handleCcSelection = (e) => {
 	} else {
 		firstDiv.style.display = 'none';
 	}
-	// console.log(e.target.value);
 };
 
-const onLoad = (callback) => {
-	// if (select.value !== 'select_method') {
-	// 	console.log('its not', select.value);
-	// }
-	callback.addEventListener("change", handleCcSelection, true);
-	disabledColorShirts(nodes.fieldset[1].lastElementChild.lastElementChild);
-}
+
 onLoad(nodes.fieldset[3]);
-
-
-
-nodes.jobRole.addEventListener("change", jobRoleSelection, true);
-// const design = nodes.fieldset[1].querySelector('SELECT[id="design"]');
-nodes.fieldset[1].querySelector('SELECT[id="design"]').addEventListener("change", handleShirtSelect, true);
-nodes.fieldset[2].addEventListener("change", handleCrossTimes, true);
