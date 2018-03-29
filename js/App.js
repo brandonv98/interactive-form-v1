@@ -122,66 +122,43 @@ const handleShirtSelect = (e) => {
 // ===========================================
 // ---------		Section 3	 	------------------
 // ===========================================
-const findCrossTimes = (checkTimes, btnClicked) => {
-	checkTimes = checkTimes.children;
-	const storeState = [];
-	let clickedBtnLabel = btnClicked.parentNode.textContent;
-	let clickedBtnLabelFind = clickedBtnLabel.indexOf('— ');
-	let clickedBtnLabelFindChar = clickedBtnLabel.charAt(clickedBtnLabelFind);
-	const timeFromClick = clickedBtnLabel.slice(clickedBtnLabelFind, -11);
-
-	for (let i = 0; i < checkTimes.length; i++) {
-
-		const strVal = checkTimes[i].textContent;
-		let startPoint = strVal.indexOf('— ');
-		// let getChar = strVal.charAt(startPoint);
-		let finalyFind = strVal.slice(startPoint, -11);
-
-		if (finalyFind.includes(timeFromClick)) {
-			console.log(finalyFind.includes(timeFromClick));
-			storeState.push(checkTimes[i].firstElementChild);
-		}
-	}
-	storeState.push(btnClicked);
-	return storeState;
-};
-
-const disableTimes = (timesArray, target) => {
-	const targetString = target.parentNode.textContent;
-	const findTime = targetString.indexOf('— ');
-	const targetTime = targetString.slice(findTime, -11);
-
-	let checked = timesArray[timesArray.length - 1].checked;
-
-	if (!checked) {
-		for (let i = 0; i < someState.length; i++) {
-			let time = someState[i].parentNode.textContent;
-			let findTime = time.indexOf('— ');
-			let allTimes = time.slice(findTime);
-
-			if (allTimes.includes(targetTime)) {
-				someState[i].parentNode.setAttribute('style', 'opacity: 1;');
-				someState[i].removeAttribute('disabled');
+const findCrossTimes = (labels, Usertarget) => { /// Yeah, IDFK.....
+	labels = labels.children;
+	const targetTextContext = Usertarget.parentNode.textContent;
+	const findTime = targetTextContext.indexOf('— ');
+	const targetTime = targetTextContext.slice(findTime, -11);
+	for (let i = 0; i < labels.length; i++) {
+		const labelTextContent = labels[i].textContent;
+		let labelsFindTime = labelTextContent.indexOf('— ');
+		let lablesTime = labelTextContent.slice(labelsFindTime, -11);
+		if (lablesTime.includes(targetTime)) {
+			if (targetTime.length > 0) {
+				disableTimes(labels[i], Usertarget);
 			}
 		}
-	} else if (timesArray[timesArray.length - 1].checked) {
-		for (let i = 0; i < timesArray.length; i++) {
-			timesArray[i].setAttribute('disabled', true);
-			timesArray[i].parentNode.setAttribute('style', 'opacity: 0.4;');
-			someState.push(timesArray[i]);
-		}
-	}
-	try {
-		let checked = timesArray[timesArray.length - 1].checked;
-		if (checked) {
-			timesArray[timesArray.length - 1].removeAttribute('disabled');
-			timesArray[timesArray.length - 1].parentNode.setAttribute('style', 'opacity: 1;');
-		}
-	} catch (e) {
-		console.error('This a problem...');
 	}
 };
 
+const disableTimes = (label, Usertarget) => {
+	let isChecked = Usertarget.checked;
+	if (!isChecked) {
+		// console.log(Usertarget, label, '!Checked is fired', !isChecked); // Added for people who want/need training wheels.
+		label.setAttribute('style', 'opacity: 1;');
+		label.firstElementChild.removeAttribute('disabled');
+	} else if (isChecked) {
+		// console.log(Usertarget, label, 'isCheck fired', isChecked); // Added for people who want/need training wheels.
+		label.setAttribute('style', 'opacity: 0.4;');
+		label.firstElementChild.setAttribute('disabled', true);
+	}
+	Usertarget.parentNode.setAttribute('style', 'opacity: 1;');
+	Usertarget.removeAttribute('disabled');
+	try {
+		Usertarget.parentNode.setAttribute('style', 'opacity: 1;');
+		Usertarget.removeAttribute('disabled');
+	} catch (e) {
+		console.error('This a problem...', 'Problem finding users traget node', e);
+	}
+};
 const handleActivities = (e) => {
 	const checkBox = e.target;
 	let clickedBtnLabel = checkBox.parentNode.textContent;
@@ -201,8 +178,7 @@ const handleActivities = (e) => {
 	let HTML = `<legend>Your Total:</legend>
 							<label for="total">${dollarSign} ${nodes.total}</label> `;
 	parent.lastElementChild.innerHTML = `${HTML}`;
-	const times = findCrossTimes(parent, checkBox);
-	disableTimes(times, e.target);
+	findCrossTimes(parent, checkBox);
 };
 // ===========================================
 // ---------		Section 4	 	------------------
