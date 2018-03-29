@@ -11,7 +11,7 @@ const nodeConfig = (f) => { // Traverse the DOM to select needed nodes.
 	const fieldsets = form.querySelectorAll('FIELDSET');
 	const jobRole = fieldsetFirst.lastElementChild;
 	const button = document.querySelector('BUTTON[TYPE="SUBMIT"]');
-	const allInput = document.querySelectorAll('INPUT');
+	const allInput = document.querySelectorAll('INPUT[id]');
 	const exportNodes = {
 		form,
 		fieldsetFirst,
@@ -29,7 +29,8 @@ const nodeConfig = (f) => { // Traverse the DOM to select needed nodes.
 		},
 		total: 0,
 		button,
-		allInput
+		allInput,
+		url: null
 	};
 	return exportNodes;
 };
@@ -52,6 +53,7 @@ const onLoad = (node) => {
 	nodes.fieldset[2].addEventListener("change", handleActivities, true);
 	nodes.fieldset[3].addEventListener("change", handleCcSelection, true);
 	nodes.jobRole.addEventListener("change", jobRoleSelection, true);
+	nodes.button.addEventListener('click', onSubmit, true);
 	disabledColorShirts(nodes.fieldset[1].lastElementChild.lastElementChild);
 	handleRequiredFields(nodes.allInput, 3);
 }
@@ -202,7 +204,6 @@ const handleActivities = (e) => {
 	const times = findCrossTimes(parent, checkBox);
 	disableTimes(times, e.target);
 };
-console.log(nodes.total);
 // ===========================================
 // ---------		Section 4	 	------------------
 // ===========================================
@@ -212,19 +213,43 @@ const handleCcSelection = (e) => {
 	const isCC = select.value === 'credit card'; // CreditCard
 	const isPP = select.value === 'paypal'; // PayPal
 	const isBC = select.value === 'bitcoin'; // Bitcoin
-
-	if (isCC) {
-		firstDiv.style.display = 'block';
-	} else if (isPP) {
+	const toCheck = {
+		isCC,
+		isPP,
+		isBC
+	};
+	handleSelect(toCheck, firstDiv);
+};
+// ===========================================
+// ---------		Section 5	 	------------------
+// ===========================================
+const handleSelect = (isTruthy, div) => {
+	if (isTruthy.isCC) {
+		div.style.display = 'block';
+		nodes.url = undefined;
+	} else if (isTruthy.isPP) {
 		const url = 'https://www.paypal.com/us/home';
-		window.open(url, '_blank');
-	} else if (isBC) {
+		nodes.url = url;
+	} else if (isTruthy.isBC) {
 		const url = 'https://bitcoin.org/en/';
-		window.open(url, '_blank');
+		nodes.url = url;
 	} else {
-		firstDiv.style.display = 'none';
+		div.style.display = 'none';
 	}
 };
+
+const onSubmit = (e) => {
+	const url = nodes.url;
+
+	if (url === undefined) {
+		handleRequiredFields(nodes.allInput, 0);
+	} else {
+		// const isCC = url !== null;
+		// isCC ? window.open(nodes.url, '_blank') : alert('select a payment type.');
+	}
+
+};
+
 
 
 onLoad();
