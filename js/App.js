@@ -250,6 +250,7 @@ const onSubmit = (e) => {
 	const basicInfo = nodes.fieldset[0].querySelectorAll('INPUT');
 	const activities = nodes.fieldset[2].querySelectorAll('INPUT');
 
+
 	handleRequiredFields(basicInfo, null, false); // Add required fields.
 
 	if (nodes.total > 0) {
@@ -267,7 +268,8 @@ const onSubmit = (e) => {
 	// const isCC = url !== null;
 	// isCC ? window.open(nodes.url, '_blank') : alert('select a payment type.');
 	// }
-
+	// NOTE: Not sure about this....
+	nodes.form.method = 'POST'
 };
 
 
