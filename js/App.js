@@ -29,6 +29,12 @@ const nodeConfig = (f) => { // Traverse the DOM to select needed nodes.
 				return (isSeekedParent ? this.getParent : this.findParent(node.parentNode, seekingParent));
 			}
 		},
+		findChild(node, seekingChild) {
+			this.node = node.nextSibling;
+			let isSeekedChild = node.nextSibling.tagName === seekingChild; {
+				return (isSeekedChild ? this.node : this.findChild(node.nextSibling, seekingChild));
+			}
+		},
 		mkNode(NODE, location, HTML) {
 			const newNode = document.createElement(NODE); // Create new DOM node.
 			location.append(newNode); // append new DOM node.
@@ -102,26 +108,26 @@ const jobRoleSelection = (e) => {
 // ---------		Section 2	 	@T-Shirt Info		------------------
 // ===========================================================
 const disabledColorShirts = (parentNode) => { // Param = the select node from { nodes.fieldset[1].color section }.
-	const HTML = 'Select a theme first..'; // Add description.
-	const option = nodes.mkNode('OPTION', parentNode, HTML);
 	const parentDiv = nodes.findParent(parentNode, 'DIV'); // Find Parent Div.
 	parentDiv.style.visibility = 'hidden'; // Hide Parent Div.
-	// option.setAttribute('selected', true); // Set option node to show first.
-	parentNode.setAttribute('disabled', true); // Disable color box.
 };
 const handleColors = (colors, brand) => {
 	for (let i = 0; i < colors.length; i++) {
 		if (brand === 'js puns') {
 			if (colors[i].textContent.indexOf('I') > 1) {
 				colors[i].hidden = true;
+				colors[i].removeAttribute('selected', true);
 			} else {
 				colors[i].hidden = false;
+				colors[i].setAttribute('selected', true);
 			}
 		} else if (brand === 'heart js') {
 			if (colors[i].textContent.indexOf('Puns') > 1) {
 				colors[i].hidden = true;
+				colors[i].removeAttribute('selected', true);
 			} else {
 				colors[i].hidden = false;
+				colors[i].setAttribute('selected', true);
 			}
 		}
 	} /// End for loop.
@@ -133,16 +139,9 @@ const handleShirtSelect = (e) => {
 	const parentDiv = nodes.findParent(selected, 'DIV'); // Find Parent Div.
 
 	if (parentDiv.style.visibility === 'hidden') {
-
-		// NOTE: NEEDS TO BE FIXED!!
-
-		options[options.length - 1].remove();
-		const parentDiv = nodes.findParent(selected, 'DIV'); // Find Parent Div.
 		parentDiv.removeAttribute('style', true);
-		// console.log(parentDiv);
-		selected.removeAttribute('disabled');
-		// options[0].setAttribute('selected', true);
-	} else if (shirt === 'heart js') {
+	}
+	if (shirt === 'heart js') {
 		handleColors(nodes.fieldset[1].lastElementChild.lastElementChild, shirt);
 	} else if (shirt === 'js puns') {
 		handleColors(nodes.fieldset[1].lastElementChild.lastElementChild, shirt);
@@ -150,9 +149,9 @@ const handleShirtSelect = (e) => {
 		disabledColorShirts(selected);
 	}
 };
-// ===========================================
-// ---------		Section 3	 	------------------
-// ===========================================
+// =====================================================================
+// ---------		Section 3	 	@Register for Activities 	------------------
+// =====================================================================
 const findCrossTimes = (labels, Usertarget) => { /// Find times that collide.
 	labels = labels.children;
 	const targetTextContext = Usertarget.parentNode.textContent;
@@ -209,9 +208,9 @@ const handleActivities = (e) => {
 	parent.lastElementChild.innerHTML = `${HTML}`; // Append total's
 	findCrossTimes(parent, userTarget); // Check cross times conflict.
 };
-// ===========================================
-// ---------		Section 4	 	------------------
-// ===========================================
+// =============================================================
+// ---------		Section 4	 	@ Payment Info		------------------
+// =============================================================
 const handleCcSelection = (e) => {
 	const firstDiv = nodes.fieldset[3].querySelector('DIV');
 	const select = nodes.fieldset[3].querySelector('SELECT');
@@ -225,9 +224,9 @@ const handleCcSelection = (e) => {
 	};
 	handleSelect(toCheck, firstDiv);
 };
-// ===========================================
-// ---------		Section 5	 	------------------
-// ===========================================
+// ====================================================================
+// ---------		Section 5	 @ Payment Info > Button	-------------------
+// ====================================================================
 const handleSelect = (isTruthy, div) => {
 	if (isTruthy.isCC) {
 		div.style.display = 'block';
@@ -235,15 +234,15 @@ const handleSelect = (isTruthy, div) => {
 	} else if (isTruthy.isPP) {
 		const url = 'https://www.paypal.com/us/home';
 		nodes.url = url;
+		div.style.display = 'none';
 	} else if (isTruthy.isBC) {
 		const url = 'https://bitcoin.org/en/';
 		nodes.url = url;
+		div.style.display = 'none';
 	} else {
 		div.style.display = 'none';
 	}
 };
-// const basicInfo = nodes.fieldset[0].querySelectorAll('INPUT');
-// handleRequiredFields(basicInfo, null, false); // Add required fields.
 const onSubmit = (e) => {
 	e.preventDefault();
 	const url = nodes.url;
