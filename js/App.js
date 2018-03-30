@@ -73,6 +73,7 @@ const onLoad = (node) => { // Create on load.
 	nodes.fieldset[3].addEventListener("change", handleCcSelection, true); // Payment Section.
 	nodes.button.addEventListener('click', onSubmit, true); // Submit button.
 	disabledColorShirts(nodes.fieldset[1].lastElementChild.lastElementChild); // Disabled colors section on load.
+	nodes.button.type = 'button';
 }
 
 const handleRequiredFields = (inputs, num = null, isTrue) => { // Mainly for CC payments.
