@@ -43,12 +43,17 @@ const nodeConfig = (f) => { // Traverse the DOM to select needed nodes.
 		},
 		typeError(NODE, errorColor = 'red') {
 			this.NODE = NODE;
-			return NODE.setAttribute('style', `border: 2px solid ${errorColor}`);
+			return NODE.setAttribute('style', `border: 3px solid ${errorColor}; border-radius: 8px;`);
+			// background-color: ${errorColor};
 		},
 		isValue(inputValue) {
 			this.inputValue = inputValue;
 			const isValid = inputValue.value.length >= 2;
 			return (isValid ? true : false);
+		},
+		validateEmail(email) {
+			const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+			return re.test(String(email).toLowerCase());
 		},
 		total: 0,
 		button,
@@ -58,11 +63,14 @@ const nodeConfig = (f) => { // Traverse the DOM to select needed nodes.
 	return exportNodes;
 };
 const nodes = nodeConfig(); // Save our config nodes & methods.
-const errorTypes = {
-	success: 'lightgreen',
-	error: 'red',
-	warning: 'yellow'
-};
+const errorTypes = (opacity = 0.35) => {
+	const errorTypes = {
+		success: `rgba(144, 238, 144, ${opacity})`,
+		error: `rgba(255, 0, 0, ${opacity})`,
+		warning: `rgba(255, 255, 0, ${opacity})`
+	};
+	return errorTypes;
+}
 // ============================================================================
 // ----------------		Event Listeners	& Start State 	-------------------------
 // ============================================================================
@@ -80,10 +88,10 @@ const handleRequiredFields = (inputs, num = null, isTrue) => { // Mainly for CC 
 	for (var i = 0; i < inputs.length - num; i++) {
 		if (nodes.isValue(inputs[i])) {
 			inputs[i].removeAttribute('required', true);
-			nodes.typeError(inputs[i], errorTypes.success);
+			nodes.typeError(inputs[i], errorTypes(.3).success);
 		} else {
 			inputs[i].setAttribute('required', true);
-			nodes.typeError(inputs[i]);
+			nodes.typeError(inputs[i], errorTypes(.3).error);
 		}
 	}
 }
@@ -245,7 +253,7 @@ const handleSelect = (isTruthy, div) => {
 	}
 };
 const onSubmit = (e) => {
-	e.preventDefault();
+	// e.preventDefault();
 	const url = nodes.url;
 
 	const basicInfo = nodes.fieldset[0].querySelectorAll('INPUT');
@@ -261,6 +269,9 @@ const onSubmit = (e) => {
 		console.log('NOOO');
 	}
 
+	// console.log(nodes.validateEmail(basicInfo[1].value));
+
+
 
 	if (url === undefined) {
 		handleRequiredFields(nodes.allInput, 0);
@@ -270,7 +281,9 @@ const onSubmit = (e) => {
 	// isCC ? window.open(nodes.url, '_blank') : alert('select a payment type.');
 	// }
 	// NOTE: Not sure about this....
-	nodes.form.method = 'POST'
+	// nodes.form.method = 'POST'
+	// nodes.button.type = 'submit';
+	console.log(nodes.button.type);
 };
 
 
