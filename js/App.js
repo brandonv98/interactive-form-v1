@@ -91,6 +91,8 @@ const errorTypes = (opacity = 0.35) => {
 // ============================================================================
 const onLoad = (node) => { // Create on load.
 	nodes.fieldset[0].addEventListener("change", jobRoleSelection, true); // Job Role other.
+	const basicInfo = document.querySelectorAll('INPUT');
+	nodes.fieldset[0].addEventListener("keydown", emailCheck, true); // Job Role other.
 	nodes.fieldset[1].querySelector('SELECT[id="design"]').addEventListener("change", handleShirtSelect, true); // T-Shirt Info section.
 	nodes.fieldset[2].addEventListener("change", handleActivities, true); // Activities Section.
 	nodes.fieldset[3].addEventListener("change", handleCcSelection, true); // Payment Section.
@@ -98,6 +100,19 @@ const onLoad = (node) => { // Create on load.
 	disabledColorShirts(nodes.fieldset[1].lastElementChild.lastElementChild); // Disabled colors section on load.
 	nodes.button.type = 'button';
 }
+
+const emailCheck = (e) => {
+
+	if (e.target.type === 'email') {
+		console.log(e.target.value);
+		if (nodes.validateEmail(e.target.value)) {
+			nodes.typeError(e.target, errorTypes(.5).success);
+		} else {
+			// 	// NOTE: Create new span for valid or invalid content notification.
+			nodes.typeError(e.target, errorTypes(.5).error);
+		}
+	}
+};
 
 const handleRequiredFields = (inputs, num = null, isTrue = false) => { // Mainly for CC payments.
 	for (var i = 0; i < inputs.length - num; i++) {
@@ -137,7 +152,6 @@ const jobRoleSelection = (e) => {
 			appendedDiv.remove(); // Remove old Div
 		}
 	}
-
 };
 // ===========================================================
 // ---------		Section 2	 	@T-Shirt Info		------------------
@@ -257,6 +271,14 @@ const handleCcSelection = (e) => {
 		isPP,
 		isBC
 	};
+
+	if (e.target.value === 'select_method') {
+		nodes.typeError(e.target, errorTypes(.5).error);
+		nodes.button.type = 'button';
+	} else {
+		nodes.typeError(e.target, errorTypes(0).success);
+	}
+
 	handleSelect(toCheck, paymentDivs);
 };
 const handleSelect = (isTruthy, div) => {
@@ -314,7 +336,7 @@ const activitiesError = () => {
 	// const child = parentNode.querySelector('LABEL');
 	// const parentNode = nodes.findParent();
 	const HTML = `
-		<span style=" position: absolute; top: 2rem; right: 0; border-bottom: 1px solid red; font-weight: bolder;">You must select at leaset one activity</span>
+		<span style="position: absolute; top: 2rem; right: 0; border-bottom: 1px solid red; font-weight: bolder;">You must select at leaset one activity</span>
 	`;
 	console.log();
 
@@ -344,7 +366,7 @@ const onSubmit = (e) => {
 	// }
 	// else {
 
-	activitiesError();
+	// activitiesError();
 
 	if (nodes.total > 0) { // Activies section check
 		handleRequiredFields(activities, null); // Remove required fields.
@@ -352,12 +374,7 @@ const onSubmit = (e) => {
 		handleRequiredFields(activities, null, true); // Add required fields.
 	}
 
-	if (nodes.validateEmail(basicInfo[1].value)) {
-		nodes.typeError(basicInfo[1], errorTypes(.5).success);
-	} else {
-		// NOTE: Create new span for valid or invalid content notification.
-		nodes.typeError(basicInfo[1], errorTypes(.5).error);
-	}
+
 
 	if (paymentType.value === 'select_method') {
 		nodes.typeError(paymentType, errorTypes(.5).error);
