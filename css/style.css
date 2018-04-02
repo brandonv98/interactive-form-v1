@@ -60,7 +60,7 @@ legend {
 }
 
 input[type="text"], input[type="email"], legend {
-  width: 100%;
+  width: 90%;
 }
 
 label {
@@ -139,7 +139,30 @@ button:hover {
   max-width: 7rem;
 }
 
-.required {}
+/* .required {} */
+
+.validate {
+  position: relative;
+}
+
+.validate-error {
+  color: red;
+  position: absolute;
+  margin: auto;
+  margin-left: 2px;
+}
+
+input:invalid+span:after {
+  content: '✖';
+  padding-left: 1px;
+  color: tomato;
+}
+
+input:valid+span:after {
+  content: '✓';
+  padding-left: 1px;
+  color: lightgreen;
+}
 
 /* =================================
   Helper Classes
@@ -150,9 +173,9 @@ button:hover {
 }
 
 .clearfix::after {
+  clear: both;
   content: " ";
   display: table;
-  clear: both;
 }
 
 /* =================================
