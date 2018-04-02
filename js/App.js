@@ -64,11 +64,14 @@ const nodeConfig = (f) => { // Traverse the DOM to select needed nodes.
 			const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 			return re.test(String(email).toLowerCase());
 		},
-		// isChecked(inputValue) {
-		// 	this.inputValue = inputValue;
-		// 	const isValid = inputValue.value.length >= 2;
-		// 	return (isValid ? true : false);
-		// },
+		validateName(name) {
+			const re = /^[A-Za-z\s]+$/;
+			return re.test(String(name).toLowerCase());
+		},
+		notifyUser(props) {
+			const HTML = `<span style="color: #fff;">${props.name}</span>`;
+			return `${props.before} ${HTML}`;
+		},
 		total: 0,
 		button,
 		allInput,
@@ -91,8 +94,7 @@ const errorTypes = (opacity = 0.35) => {
 // ============================================================================
 const onLoad = (node) => { // Create on load.
 	nodes.fieldset[0].addEventListener("change", jobRoleSelection, true); // Job Role other.
-	const basicInfo = document.querySelectorAll('INPUT');
-	nodes.fieldset[0].addEventListener("keydown", emailCheck, true); // Job Role other.
+	nodes.fieldset[0].addEventListener("keypress", emailCheck, true); // Job Role other.
 	nodes.fieldset[1].querySelector('SELECT[id="design"]').addEventListener("change", handleShirtSelect, true); // T-Shirt Info section.
 	nodes.fieldset[2].addEventListener("change", handleActivities, true); // Activities Section.
 	nodes.fieldset[3].addEventListener("change", handleCcSelection, true); // Payment Section.
@@ -104,6 +106,13 @@ const onLoad = (node) => { // Create on load.
 const emailCheck = (e) => {
 	if (e.target.type === 'email') {
 		if (nodes.validateEmail(e.target.value)) {
+			nodes.typeError(e.target, errorTypes(.5).success);
+		} else {
+			nodes.typeError(e.target, errorTypes(.5).error);
+		}
+	}
+	if (e.target.type === 'text') {
+		if (nodes.validateName(e.target.value)) {
 			nodes.typeError(e.target, errorTypes(.5).success);
 		} else {
 			nodes.typeError(e.target, errorTypes(.5).error);
@@ -122,6 +131,8 @@ const handleRequiredFields = (inputs, num = null, isTrue = false) => { // Mainly
 		}
 		if (inputs[i].type === 'checkbox' && isTrue) {
 			inputs[i].setAttribute('required', true);
+			// nodes.typeError(inputs[i].parentNode, errorTypes(.5).error);
+			// nodes.typeError(inputs[i].parentNode.parentNode.firstElementChild, errorTypes(.5).error);
 		} else if (inputs[i].type === 'checkbox') {
 			inputs[i].removeAttribute('required');
 		}
@@ -153,6 +164,13 @@ const jobRoleSelection = (e) => {
 			nodes.typeError(e.target, errorTypes(.5).success);
 		} else {
 			// 	// NOTE: Create new span for valid or invalid content notification.
+			nodes.typeError(e.target, errorTypes(.5).error);
+		}
+	}
+	if (e.target.type === 'text') {
+		if (nodes.validateName(e.target.value)) {
+			nodes.typeError(e.target, errorTypes(.5).success);
+		} else {
 			nodes.typeError(e.target, errorTypes(.5).error);
 		}
 	}
@@ -335,22 +353,16 @@ const handleSelect = (isTruthy, div) => {
 // ---------		Section 5	 @ Payment Info > Button	-------------------
 // ====================================================================
 
-const activitiesError = () => {
-	const parentNode = nodes.form.querySelector('.activities');
-	// const child = parentNode.querySelector('LABEL');
-	// const parentNode = nodes.findParent();
-	const HTML = `
-		<span style="position: absolute; top: 2rem; right: 0; border-bottom: 1px solid red; font-weight: bolder;">You must select at leaset one activity</span>
-	`;
-	console.log();
-
-	parentNode.innerHTML = `${parentNode.innerHTML} ${HTML}`;
-	parentNode.setAttribute('style', 'position: relative;');
-
-	// const newNode = nodes.mkNode('DIV', parentNode, `${HTML}`);
-	// parentNode.insertBefore(newNode, child);
-	// parentNode.setAttribute('style', 'position: relative;');
-};
+// const activitiesError = () => {
+// 	const parentNode = nodes.form.querySelector('.activities');
+// 	// const child = parentNode.querySelector('LABEL');
+// 	// const parentNode = nodes.findParent();
+// 	const HTML = `
+// 		<span style="position: absolute; top: 2rem; right: 0; border-bottom: 1px solid red; font-weight: bolder;">You must select at leaset one activity</span>
+// 	`;
+// 	parentNode.innerHTML = `${parentNode.innerHTML} ${HTML}`;
+// 	parentNode.setAttribute('style', 'position: relative;');
+// };
 
 
 const onSubmit = (e) => {
@@ -359,30 +371,49 @@ const onSubmit = (e) => {
 	const activities = nodes.fieldset[2].querySelectorAll('INPUT');
 	const paymentType = nodes.fieldset[3].querySelector('#payment');
 
+	let isValid = false;
 
-	nodes.form.action = 'index.html';
-	// nodes.button.type = 'submit';
 	nodes.attempts++;
 
+	if (!isValid) {
+		let isValid = 0;
 
-	if (nodes.total > 0) { // Activies section check
-		handleRequiredFields(activities, null); // Remove required fields.
-	} else {
-		handleRequiredFields(activities, null, true); // Add required fields.
+		if (nodes.total > 0) { // Activies section check
+			handleRequiredFields(activities, null); // Remove required fields.
+			activities[1].parentNode.parentNode.firstElementChild.innerHTML = 'Register for Activities ';
+			isValid++;
+		} else {
+			handleRequiredFields(activities, null, true); // Add required fields.
+			activities[1].parentNode.parentNode.firstElementChild.innerHTML = nodes.notifyUser({
+				name: '--Please select at least one.',
+				before: 'Register for Activities'
+			});
+			// /isValid = false;
+		}
+		if (paymentType.value === 'select_method') {
+			nodes.typeError(paymentType, errorTypes(.5).error);
+			// isValid = false;
+		} else {
+			nodes.typeError(paymentType, errorTypes(0).success);
+			// isValid = true;
+			isValid++;
+		}
+		if (url === undefined) {
+			handleRequiredFields(nodes.fieldset[3].querySelectorAll('INPUT'), 0);
+			// isValid = false;
+		} else {
+			const isCC = url !== null;
+			isCC ? window.open(nodes.url, '_blank') : nodes.typeError(paymentType, errorTypes(.5).error);
+			isValid++;
+		}
+
+		if (isValid === 3) {
+			return isValid = true;
+		}
 	}
-	if (paymentType.value === 'select_method') {
-		nodes.typeError(paymentType, errorTypes(.5).error);
-		nodes.button.type = 'button';
-	} else {
-		nodes.typeError(paymentType, errorTypes(0).success);
-	}
-
-
-	if (url === undefined) {
-		handleRequiredFields(nodes.fieldset[3].querySelectorAll('INPUT'), 0);
-	} else {
-		const isCC = url !== null;
-		isCC ? window.open(nodes.url, '_blank') : alert('select a payment type.');
+	if (isValid) {
+		nodes.form.action = 'index.html';
+		nodes.form.submit(); // Form submission
 	}
 
 
