@@ -102,13 +102,10 @@ const onLoad = (node) => { // Create on load.
 }
 
 const emailCheck = (e) => {
-
 	if (e.target.type === 'email') {
-		console.log(e.target.value);
 		if (nodes.validateEmail(e.target.value)) {
 			nodes.typeError(e.target, errorTypes(.5).success);
 		} else {
-			// 	// NOTE: Create new span for valid or invalid content notification.
 			nodes.typeError(e.target, errorTypes(.5).error);
 		}
 	}
@@ -124,10 +121,8 @@ const handleRequiredFields = (inputs, num = null, isTrue = false) => { // Mainly
 			nodes.typeError(inputs[i], errorTypes(.5).error);
 		}
 		if (inputs[i].type === 'checkbox' && isTrue) {
-			// console.log(inputs[i]);
 			inputs[i].setAttribute('required', true);
 		} else if (inputs[i].type === 'checkbox') {
-			console.log(inputs[i]);
 			inputs[i].removeAttribute('required');
 		}
 	}
@@ -150,6 +145,15 @@ const jobRoleSelection = (e) => {
 			otherJobRoleField(nodes.fieldset[0]); // Pass 1st fieldset DOM node.
 		} else if (appendedDiv.tagName === 'DIV') {
 			appendedDiv.remove(); // Remove old Div
+		}
+	}
+	if (e.target.type === 'email') {
+		console.log(e.target.value);
+		if (nodes.validateEmail(e.target.value)) {
+			nodes.typeError(e.target, errorTypes(.5).success);
+		} else {
+			// 	// NOTE: Create new span for valid or invalid content notification.
+			nodes.typeError(e.target, errorTypes(.5).error);
 		}
 	}
 };
@@ -355,27 +359,17 @@ const onSubmit = (e) => {
 	const activities = nodes.fieldset[2].querySelectorAll('INPUT');
 	const paymentType = nodes.fieldset[3].querySelector('#payment');
 
-	console.log(paymentType);
 
-
-
-	// if (!basicInfo[0].validity.valid) {
 	nodes.form.action = 'index.html';
 	// nodes.button.type = 'submit';
 	nodes.attempts++;
-	// }
-	// else {
 
-	// activitiesError();
 
 	if (nodes.total > 0) { // Activies section check
 		handleRequiredFields(activities, null); // Remove required fields.
 	} else {
 		handleRequiredFields(activities, null, true); // Add required fields.
 	}
-
-
-
 	if (paymentType.value === 'select_method') {
 		nodes.typeError(paymentType, errorTypes(.5).error);
 		nodes.button.type = 'button';
@@ -388,16 +382,10 @@ const onSubmit = (e) => {
 		handleRequiredFields(nodes.fieldset[3].querySelectorAll('INPUT'), 0);
 	} else {
 		const isCC = url !== null;
-		// isCC ? window.open(nodes.url, '_blank') : alert('select a payment type.');
+		isCC ? window.open(nodes.url, '_blank') : alert('select a payment type.');
 	}
 
-	// activitiesError();
 
-
-	// NOTE: Not sure about this....
-
-	console.log(nodes.button.type);
-	// }
 	console.log(nodes.button.type);
 };
 
