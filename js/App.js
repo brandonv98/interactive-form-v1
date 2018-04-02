@@ -159,7 +159,6 @@ const jobRoleSelection = (e) => {
 		}
 	}
 	if (e.target.type === 'email') {
-		console.log(e.target.value);
 		if (nodes.validateEmail(e.target.value)) {
 			nodes.typeError(e.target, errorTypes(.5).success);
 		} else {
@@ -371,53 +370,41 @@ const onSubmit = (e) => {
 	const activities = nodes.fieldset[2].querySelectorAll('INPUT');
 	const paymentType = nodes.fieldset[3].querySelector('#payment');
 
-	let isValid = false;
-
+	let toSubmit = false;
+	nodes.form.action = 'index.html';
+	// nodes.form.submit(); //form submission
 	nodes.attempts++;
 
-	if (!isValid) {
-		let isValid = 0;
+	let isValid = 0;
 
-		if (nodes.total > 0) { // Activies section check
-			handleRequiredFields(activities, null); // Remove required fields.
-			activities[1].parentNode.parentNode.firstElementChild.innerHTML = 'Register for Activities ';
-			isValid++;
-		} else {
-			handleRequiredFields(activities, null, true); // Add required fields.
-			activities[1].parentNode.parentNode.firstElementChild.innerHTML = nodes.notifyUser({
-				name: '--Please select at least one.',
-				before: 'Register for Activities'
-			});
-			// /isValid = false;
-		}
-		if (paymentType.value === 'select_method') {
-			nodes.typeError(paymentType, errorTypes(.5).error);
-			// isValid = false;
-		} else {
-			nodes.typeError(paymentType, errorTypes(0).success);
-			// isValid = true;
-			isValid++;
-		}
-		if (url === undefined) {
-			handleRequiredFields(nodes.fieldset[3].querySelectorAll('INPUT'), 0);
-			// isValid = false;
-		} else {
-			const isCC = url !== null;
-			isCC ? window.open(nodes.url, '_blank') : nodes.typeError(paymentType, errorTypes(.5).error);
-			isValid++;
-		}
-
-		if (isValid === 3) {
-			return isValid = true;
-		}
+	if (nodes.total > 0) { // Activies section check
+		handleRequiredFields(activities, null); // Remove required fields.
+		activities[1].parentNode.parentNode.firstElementChild.innerHTML = 'Register for Activities ';
+		isValid++;
+	} else {
+		handleRequiredFields(activities, null, true); // Add required fields.
+		activities[1].parentNode.parentNode.firstElementChild.innerHTML = nodes.notifyUser({
+			name: '--Please select at least one.',
+			before: 'Register for Activities'
+		});
 	}
-	if (isValid) {
-		nodes.form.action = 'index.html';
-		nodes.form.submit(); // Form submission
+	if (paymentType.value === 'select_method') {
+		nodes.typeError(paymentType, errorTypes(.5).error);
+	} else {
+		nodes.typeError(paymentType, errorTypes(0).success);
+		isValid++;
+	}
+	if (url === undefined) {
+		handleRequiredFields(nodes.fieldset[3].querySelectorAll('INPUT'), 0);
+		isValid++;
+	} else {
+		const isCC = url !== null;
+		isCC ? window.open(nodes.url, '_blank') : nodes.typeError(paymentType, errorTypes(.5).error);
+		isValid++;
 	}
 
-
-	console.log(nodes.button.type);
+	toSubmit = true;
+	return toSubmit;
 };
 
 
