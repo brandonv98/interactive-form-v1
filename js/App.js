@@ -359,6 +359,10 @@ const onSubmit = (e) => {
 	const activities = nodes.fieldset[2].querySelectorAll('INPUT');
 	const paymentType = nodes.fieldset[3].querySelector('#payment');
 	nodes.attempts++;
+	const doubleCheck = document.querySelectorAll('INPUT');
+	for (var i = 0; i < doubleCheck.length; i++) {
+		doubleCheck[i].setAttribute('required', true);
+	}
 
 	if (nodes.total > 0) { // Activies section check
 		handleRequiredFields(activities, null); // Remove required fields.
