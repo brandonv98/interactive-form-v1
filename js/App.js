@@ -3,7 +3,7 @@
 //^		--------------------------------------------------------------------------------
 //^		1. Quick tips => mkNode(); = nodes.mkNode(tagName, ParentNode, 'optional:{innerHTML}');
 //^		2. findParent(); => nodes.findParent(	element, 'tagName' ); Tag name is passed to the parent you are seeking to find.
-//^ 	
+//^
 ==========================================================================================================*/
 "use strict";
 window.onload = () => { // On load select input form. === first;
@@ -15,7 +15,6 @@ window.onload = () => { // On load select input form. === first;
 	const payPal = ccDiv.nextElementSibling;
 	payPal.style.display = 'none'; // Hide the payment divs
 	const bitCoin = payPal.nextElementSibling.style.display = 'none'; // Hide the payment divs
-
 	const basicInfo = document.querySelectorAll('INPUT');
 	const HTML = `
 	<span class="validity"></span>`;
@@ -52,7 +51,6 @@ const nodeConfig = (f) => { // Traverse the DOM to select needed nodes.
 		typeError(NODE, errorColor = 'red') {
 			this.NODE = NODE;
 			return NODE.setAttribute('style', `border: 3px solid ${errorColor}; border-radius: 8px;`);
-			// background-color: ${errorColor};
 		},
 		isValue(inputValue) {
 			this.inputValue = inputValue;
@@ -119,7 +117,7 @@ const emailCheck = (e) => {
 		}
 	}
 };
-const handleRequiredFields = (inputs, num = null, isTrue = false) => { // Mainly for CC payments.
+const handleRequiredFields = (inputs, num = null, isTrue = false) => { // Add and remove required fields
 	for (var i = 0; i < inputs.length - num; i++) {
 		if (nodes.isValue(inputs[i])) {
 			inputs[i].removeAttribute('required', true);
@@ -160,7 +158,6 @@ const jobRoleSelection = (e) => {
 			nodes.typeError(e.target, errorTypes(.5).success);
 			e.target.removeAttribute('required');
 		} else {
-			// 	// NOTE: Create new span for valid or invalid content notification.
 			nodes.typeError(e.target, errorTypes(.5).error);
 			e.target.setAttribute('required', true);
 		}
@@ -208,7 +205,6 @@ const handleShirtSelect = (e) => {
 	const selected = nodes.fieldset[1].lastElementChild.lastElementChild; // Select Node.
 	const options = nodes.fieldset[1].lastElementChild.lastElementChild.querySelectorAll('OPTION'); // Option Nodes.
 	const parentDiv = nodes.findParent(selected, 'DIV'); // Find Parent Div.
-
 	if (parentDiv.style.visibility === 'hidden') {
 		parentDiv.removeAttribute('style', true);
 	}
@@ -242,11 +238,11 @@ const findCrossTimes = (labels, Usertarget) => { /// Find times that collide.
 const disableTimes = (label, Usertarget) => { // Disable/ enable times.
 	const isChecked = Usertarget.checked;
 	if (!isChecked) {
-		// console.log(Usertarget, label, '!Checked is fired', !isChecked); // Added for people who want/need training wheels.
+		// console.log(Usertarget, label, '!Checked is fired', !isChecked); // Added for training wheels.
 		label.setAttribute('style', 'opacity: 1;');
 		label.firstElementChild.removeAttribute('disabled');
 	} else if (isChecked) {
-		// console.log(Usertarget, label, 'isCheck fired', isChecked); // Added for people who want/need training wheels.
+		// console.log(Usertarget, label, 'isCheck fired', isChecked); // Added for training wheels.
 		label.setAttribute('style', 'opacity: 0.4;');
 		label.firstElementChild.setAttribute('disabled', true);
 	}
@@ -334,7 +330,6 @@ const handleSelect = (isTruthy, div) => {
 				div[i].querySelector('INPUT').value = '';
 			} else {
 				div[i].querySelector('INPUT').value = '';
-				// div[i].querySelector('INPUT').removeAttribute('required', true);
 			}
 		}
 
@@ -382,7 +377,7 @@ const onSubmit = (e) => {
 		isCC ? window.open(nodes.url, '_blank') : nodes.typeError(paymentType, errorTypes(.5).error);
 	}
 	const errors = document.querySelectorAll('[required]');
-	if (errors.length === 0) {
+	if (errors.length === 0) { // If all is ready, then submit.
 		nodes.form.action = 'index.html';
 		nodes.form.submit(); //form submission
 	}
