@@ -3,8 +3,7 @@
 //^		--------------------------------------------------------------------------------
 //^		1. Quick tips => mkNode(); = nodes.mkNode(tagName, ParentNode, 'optional:{innerHTML}');
 //^		2. findParent(); => nodes.findParent(	element, 'tagName' ); Tag name is passed to the parent you are seeking to find.
-//^				Selecting parent node use (	nodes.getParent	). value is === to let values.
-//^ 	3.
+//^ 	
 ==========================================================================================================*/
 "use strict";
 window.onload = () => { // On load select input form. === first;
