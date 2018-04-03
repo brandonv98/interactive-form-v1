@@ -388,7 +388,6 @@ const onSubmit = (e) => {
 		nodes.form.action = 'index.html';
 		nodes.form.submit(); //form submission
 	}
-
 };
 
 

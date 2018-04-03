@@ -158,16 +158,6 @@ input:invalid+span:after {
   color: tomato;
 }
 
-/* input:valid+span:after { */
-
-/* content: '✓'; */
-
-/* padding-left: 1px; */
-
-/* color: lightgreen; */
-
-/* } */
-
 /* =================================
   Helper Classes
 ==================================== */
