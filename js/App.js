@@ -102,11 +102,11 @@ const onLoad = (node) => { // Create on load.
 	disabledColorShirts(nodes.fieldset[1].lastElementChild.lastElementChild); // Disabled colors section on load.
 	nodes.button.type = 'button';
 }
-
 const emailCheck = (e) => {
 	if (e.target.type === 'email') {
 		if (nodes.validateEmail(e.target.value)) {
 			nodes.typeError(e.target, errorTypes(.5).success);
+			e.target.removeAttribute('required');
 		} else {
 			nodes.typeError(e.target, errorTypes(.5).error);
 		}
@@ -114,12 +114,12 @@ const emailCheck = (e) => {
 	if (e.target.type === 'text') {
 		if (nodes.validateName(e.target.value)) {
 			nodes.typeError(e.target, errorTypes(.5).success);
+			e.target.removeAttribute('required');
 		} else {
 			nodes.typeError(e.target, errorTypes(.5).error);
 		}
 	}
 };
-
 const handleRequiredFields = (inputs, num = null, isTrue = false) => { // Mainly for CC payments.
 	for (var i = 0; i < inputs.length - num; i++) {
 		if (nodes.isValue(inputs[i])) {
@@ -131,8 +131,6 @@ const handleRequiredFields = (inputs, num = null, isTrue = false) => { // Mainly
 		}
 		if (inputs[i].type === 'checkbox' && isTrue) {
 			inputs[i].setAttribute('required', true);
-			// nodes.typeError(inputs[i].parentNode, errorTypes(.5).error);
-			// nodes.typeError(inputs[i].parentNode.parentNode.firstElementChild, errorTypes(.5).error);
 		} else if (inputs[i].type === 'checkbox') {
 			inputs[i].removeAttribute('required');
 		}
@@ -161,16 +159,20 @@ const jobRoleSelection = (e) => {
 	if (e.target.type === 'email') {
 		if (nodes.validateEmail(e.target.value)) {
 			nodes.typeError(e.target, errorTypes(.5).success);
+			e.target.removeAttribute('required');
 		} else {
 			// 	// NOTE: Create new span for valid or invalid content notification.
 			nodes.typeError(e.target, errorTypes(.5).error);
+			e.target.setAttribute('required', true);
 		}
 	}
 	if (e.target.type === 'text') {
 		if (nodes.validateName(e.target.value)) {
 			nodes.typeError(e.target, errorTypes(.5).success);
+			e.target.removeAttribute('required');
 		} else {
 			nodes.typeError(e.target, errorTypes(.5).error);
+			e.target.setAttribute('required', true);
 		}
 	}
 };
@@ -299,7 +301,6 @@ const handleCcSelection = (e) => {
 	} else {
 		nodes.typeError(e.target, errorTypes(0).success);
 	}
-
 	handleSelect(toCheck, paymentDivs);
 };
 const handleSelect = (isTruthy, div) => {
@@ -334,6 +335,7 @@ const handleSelect = (isTruthy, div) => {
 				div[i].querySelector('INPUT').value = '';
 			} else {
 				div[i].querySelector('INPUT').value = '';
+				// div[i].querySelector('INPUT').removeAttribute('required', true);
 			}
 		}
 
@@ -356,7 +358,6 @@ const onSubmit = (e) => {
 	const basicInfo = nodes.fieldset[0].querySelectorAll('INPUT');
 	const activities = nodes.fieldset[2].querySelectorAll('INPUT');
 	const paymentType = nodes.fieldset[3].querySelector('#payment');
-
 	nodes.attempts++;
 
 	if (nodes.total > 0) { // Activies section check
@@ -368,13 +369,13 @@ const onSubmit = (e) => {
 			name: '--Please select at least one.',
 			before: 'Register for Activities'
 		});
-		return false;
 	}
 	if (paymentType.value === 'select_method') {
 		nodes.typeError(paymentType, errorTypes(.5).error);
-		return false;
+		paymentType.setAttribute('required', true);
 	} else {
 		nodes.typeError(paymentType, errorTypes(0).success);
+		paymentType.removeAttribute('required', true);
 	}
 	if (url === undefined) {
 		handleRequiredFields(nodes.fieldset[3].querySelectorAll('INPUT'), 0);
@@ -382,8 +383,12 @@ const onSubmit = (e) => {
 		const isCC = url !== null;
 		isCC ? window.open(nodes.url, '_blank') : nodes.typeError(paymentType, errorTypes(.5).error);
 	}
-	nodes.form.action = 'index.html';
-	nodes.form.submit(); //form submission
+	const errors = document.querySelectorAll('[required]');
+	if (errors.length === 0) {
+		nodes.form.action = 'index.html';
+		nodes.form.submit(); //form submission
+	}
+
 };
 
 
