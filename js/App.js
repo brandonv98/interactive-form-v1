@@ -6,10 +6,7 @@
 //^
 ==========================================================================================================*/
 "use strict";
-window.onload = () => { // On load select input form. === first;
-	const input = nodes.form.querySelector('input'); // Get first input element within form.
-	input.focus(); // Focus input.
-	input.select(); // Then select Element.
+const paymentHide = () => {
 	const ccDiv = nodes.fieldset[3].querySelector('DIV'); // Select CC Div.
 	ccDiv.style.display = 'none' // Hide the payment divs
 	const payPal = ccDiv.nextElementSibling;
@@ -18,8 +15,14 @@ window.onload = () => { // On load select input form. === first;
 	const basicInfo = document.querySelectorAll('INPUT');
 	const HTML = `
 	<span class="validity"></span>`;
-	basicInfo[0].outerHTML = `${basicInfo[0].outerHTML} ${HTML}`;
-	basicInfo[1].outerHTML = `${basicInfo[1].outerHTML} ${HTML}`;
+	// basicInfo[0].outerHTML = `${basicInfo[0].outerHTML} ${HTML}`;
+	// basicInfo[1].outerHTML = `${basicInfo[1].outerHTML} ${HTML}`;
+};
+
+window.onload = () => { // On load select input form. === first;
+	const input = nodes.form.querySelector('input'); // Get first input element within form.
+	input.focus(); // Focus input.
+	input.select(); // Then select Element.
 };
 const nodeConfig = (f) => { // Traverse the DOM to select needed nodes.
 	const form = document.querySelector('FORM');
@@ -98,6 +101,7 @@ const onLoad = (node) => { // Create on load.
 	nodes.button.addEventListener('click', onSubmit, true); // Submit button.
 	disabledColorShirts(nodes.fieldset[1].lastElementChild.lastElementChild); // Disabled colors section on load.
 	nodes.button.type = 'button';
+	paymentHide();
 }
 const emailCheck = (e) => {
 	if (e.target.type === 'email') {
