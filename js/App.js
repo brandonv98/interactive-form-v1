@@ -357,12 +357,9 @@ const handleSelect = (isTruthy, div) => {
 		for (var i = 1; i < div.length - 2; i++) {
 			if (parseInt(div[i].querySelector('INPUT').value)) {
 				nodes.typeError(div[i].querySelector('INPUT'), errorTypes(.5).success);
-
 				if (div[i].querySelector('INPUT').value.length >= div[i].querySelector('INPUT').minLength) {
 					nodes.typeError(div[i].querySelector('INPUT'), errorTypes(.5).success);
-					console.log(div[i].querySelector('INPUT').value.length, div[i].querySelector('INPUT').minLength, div[i].querySelector('INPUT').maxLength);
-
-
+					// console.log(div[i].querySelector('INPUT').value.length, div[i].querySelector('INPUT').minLength, div[i].querySelector('INPUT').maxLength);
 				} else {
 					nodes.typeError(div[i].querySelector('INPUT'), errorTypes(.5).error);
 				}
@@ -370,7 +367,6 @@ const handleSelect = (isTruthy, div) => {
 				div[i].querySelector('INPUT').value = '';
 			}
 		}
-
 	} else if (isTruthy.isPP) {
 		const url = 'https://www.paypal.com/us/home';
 		div[4].style.display = 'block';
