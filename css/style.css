@@ -30,6 +30,10 @@ a {
   text-decoration: none;
 }
 
+.error {
+  border-left: 2px solid red;
+}
+
 /* =================================
   Form Element Styles
 ==================================== */
@@ -145,17 +149,12 @@ button:hover {
   position: relative;
 }
 
-.validate-error {
+.error {
   color: red;
-  position: absolute;
-  margin: auto;
-  margin-left: 2px;
-}
-
-input:invalid+span:after {
-  content: '✖';
-  padding-left: 1px;
-  color: tomato;
+  padding: 0 10px 5px 5px;
+  font-size: 1rem;
+  background-color: #fff;
+  border-radius: 5px;
 }
 
 /* =================================

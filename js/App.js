@@ -6,17 +6,17 @@
 //^
 ==========================================================================================================*/
 "use strict";
-const paymentHide = () => {
+const sectionsHide = () => {
 	const ccDiv = nodes.fieldset[3].querySelector('DIV'); // Select CC Div.
 	ccDiv.style.display = 'none' // Hide the payment divs
 	const payPal = ccDiv.nextElementSibling;
 	payPal.style.display = 'none'; // Hide the payment divs
 	const bitCoin = payPal.nextElementSibling.style.display = 'none'; // Hide the payment divs
 	const basicInfo = document.querySelectorAll('INPUT');
-	const HTML = `
-	<span class="validity"></span>`;
-	// basicInfo[0].outerHTML = `${basicInfo[0].outerHTML} ${HTML}`;
-	// basicInfo[1].outerHTML = `${basicInfo[1].outerHTML} ${HTML}`;
+
+	const otherJobHide = nodes.fieldset[0].querySelector('#other-title');
+	otherJobHide.previousElementSibling.style.display = 'none';
+	otherJobHide.style.display = 'none';
 };
 
 window.onload = () => { // On load select input form. === first;
@@ -51,8 +51,16 @@ const nodeConfig = (f) => { // Traverse the DOM to select needed nodes.
 			(HTML) ? newNode.innerHTML = HTML: null; // If HTML is passed utilize it, else set to null.
 			return newNode;
 		},
+		rmNode(NODE, parentLocation = undefined) { // Remove Node
+			const parent = this.findParent(NODE, parentLocation); // If not found find it.
+			(NODE) ? NODE.remove(): null; // Remove node
+		},
 		typeError(NODE, errorColor = 'red') {
 			this.NODE = NODE;
+			this.errorColor = errorColor;
+			// if (errorColor) {
+			// this.customError(NODE);
+			// }
 			return NODE.setAttribute('style', `border: 3px solid ${errorColor}; border-radius: 8px;`);
 		},
 		isValue(inputValue) {
@@ -69,8 +77,29 @@ const nodeConfig = (f) => { // Traverse the DOM to select needed nodes.
 			return re.test(String(name).toLowerCase());
 		},
 		notifyUser(props) {
-			const HTML = `<span style="color: #fff;">${props.name}</span>`;
+			const HTML = `<span class="${props.class}">${props.name}</span>`;
 			return `${props.before} ${HTML}`;
+		},
+		customError(inputNode, message = 'Error !') {
+			let check;
+			if (inputNode.required) {
+				const HTML = `<span class="error">${message}</span>`;
+				this.mkNode('DIV', inputNode.previousElementSibling || inputNode.parentNode, HTML);
+				if (inputNode.parentNode.querySelectorAll('LABEL').length > 1) {
+					const check = inputNode.parentNode.querySelectorAll('LABEL');
+					console.log(check);
+					for (let i = 0; i < check.length; i++) {
+						if (check[i].children.length > 1) {
+							if (check[i].children[0].tagName === 'DIV') {
+								this.rmNode(check[i].children[0]);
+							}
+						}
+					}
+				}
+			} else {
+				const rmError = inputNode.parentNode.querySelector('SPAN[class="error"]').parentNode;
+				this.rmNode(rmError);
+			}
 		},
 		total: 0,
 		button,
@@ -101,7 +130,7 @@ const onLoad = (node) => { // Create on load.
 	nodes.button.addEventListener('click', onSubmit, true); // Submit button.
 	disabledColorShirts(nodes.fieldset[1].lastElementChild.lastElementChild); // Disabled colors section on load.
 	nodes.button.type = 'button';
-	paymentHide();
+	sectionsHide();
 }
 const emailCheck = (e) => {
 	if (e.target.type === 'email') {
@@ -147,32 +176,33 @@ const otherJobRoleField = (parentNode) => { // Create and append new input if ot
 	nodes.mkNode('DIV', parentNode, `${HTML}`);
 };
 const jobRoleSelection = (e) => {
-	let optionOther = e.target.value === 'other';
+	const target = e.target || e;
+	let optionOther = target.value === 'other';
 	let appendedDiv = nodes.fieldset[0].lastElementChild;
 
-	if (e.target.tagName === 'SELECT') { // Double check we are only fireing on SELECT NODES values.
+	if (target.tagName === 'SELECT') { // Double check we are only fireing on SELECT NODES values.
 		if (optionOther) {
 			otherJobRoleField(nodes.fieldset[0]); // Pass 1st fieldset DOM node.
 		} else if (appendedDiv.tagName === 'DIV') {
 			appendedDiv.remove(); // Remove old Div
 		}
 	}
-	if (e.target.type === 'email') {
-		if (nodes.validateEmail(e.target.value)) {
-			nodes.typeError(e.target, errorTypes(.5).success);
-			e.target.removeAttribute('required');
+	if (target.type === 'email') {
+		if (nodes.validateEmail(target.value)) {
+			nodes.typeError(target, errorTypes(.5).success);
+			target.removeAttribute('required');
 		} else {
-			nodes.typeError(e.target, errorTypes(.5).error);
-			e.target.setAttribute('required', true);
+			nodes.typeError(target, errorTypes(.5).error);
+			target.setAttribute('required', true);
 		}
 	}
-	if (e.target.type === 'text') {
-		if (nodes.validateName(e.target.value)) {
-			nodes.typeError(e.target, errorTypes(.5).success);
-			e.target.removeAttribute('required');
+	if (target.type === 'text') {
+		if (nodes.validateName(target.value)) {
+			nodes.typeError(target, errorTypes(.5).success);
+			target.removeAttribute('required');
 		} else {
-			nodes.typeError(e.target, errorTypes(.5).error);
-			e.target.setAttribute('required', true);
+			nodes.typeError(target, errorTypes(.5).error);
+			target.setAttribute('required', true);
 		}
 	}
 };
@@ -283,6 +313,10 @@ const handleActivities = (e) => {
 // ---------		Section 4	 	@ Payment Info		------------------
 // =============================================================
 const handleCcSelection = (e) => {
+
+	// console.log(e.target);
+	const target = e.target || e;
+
 	const paymentDivs = nodes.fieldset[3].querySelectorAll('DIV');
 	const select = nodes.fieldset[3].querySelector('SELECT');
 	const isCC = select.value === 'credit card'; // CreditCard
@@ -294,11 +328,11 @@ const handleCcSelection = (e) => {
 		isBC
 	};
 
-	if (e.target.value === 'select_method') {
-		nodes.typeError(e.target, errorTypes(.5).error);
-		nodes.button.type = 'button';
+	if (target.value === 'select_method') {
+		nodes.typeError(target, errorTypes(.5).error);
+		// nodes.button.type = 'button';
 	} else {
-		nodes.typeError(e.target, errorTypes(0).success);
+		nodes.typeError(target, errorTypes(0).success);
 	}
 	handleSelect(toCheck, paymentDivs);
 };
@@ -311,8 +345,8 @@ const handleSelect = (isTruthy, div) => {
 		div[0].style.display = 'block';
 		nodes.url = undefined;
 
-		div[1].querySelector('INPUT').setAttribute('maxlength', '19');
-		div[1].querySelector('INPUT').setAttribute('minlength', '12');
+		div[1].querySelector('INPUT').setAttribute('maxlength', '16');
+		div[1].querySelector('INPUT').setAttribute('minlength', '13');
 
 		div[2].querySelector('INPUT').setAttribute('maxlength', '5');
 		div[2].querySelector('INPUT').setAttribute('minlength', '5');
@@ -326,12 +360,12 @@ const handleSelect = (isTruthy, div) => {
 
 				if (div[i].querySelector('INPUT').value.length >= div[i].querySelector('INPUT').minLength) {
 					nodes.typeError(div[i].querySelector('INPUT'), errorTypes(.5).success);
+					console.log(div[i].querySelector('INPUT').value.length, div[i].querySelector('INPUT').minLength, div[i].querySelector('INPUT').maxLength);
+
+
 				} else {
 					nodes.typeError(div[i].querySelector('INPUT'), errorTypes(.5).error);
 				}
-			} else if (typeof div[i].querySelector('INPUT').value === 'string' && div[i].querySelector('INPUT').value.length > 1) {
-				nodes.typeError(div[i].querySelector('INPUT'), errorTypes(.5).error);
-				div[i].querySelector('INPUT').value = '';
 			} else {
 				div[i].querySelector('INPUT').value = '';
 			}
@@ -353,10 +387,12 @@ const handleSelect = (isTruthy, div) => {
 // ====================================================================
 const onSubmit = (e) => {
 	const url = nodes.url;
+	const paymentDivs = nodes.fieldset[3].querySelectorAll('DIV');
 	const basicInfo = nodes.fieldset[0].querySelectorAll('INPUT');
 	const activities = nodes.fieldset[2].querySelectorAll('INPUT');
 	const paymentType = nodes.fieldset[3].querySelector('#payment');
 	nodes.attempts++;
+
 	if (nodes.total > 0) { // Activies section check
 		handleRequiredFields(activities, null); // Remove required fields.
 		activities[1].parentNode.parentNode.firstElementChild.innerHTML = 'Register for Activities ';
@@ -364,7 +400,8 @@ const onSubmit = (e) => {
 		handleRequiredFields(activities, null, true); // Add required fields.
 		activities[1].parentNode.parentNode.firstElementChild.innerHTML = nodes.notifyUser({
 			name: '--Please select at least one.',
-			before: 'Register for Activities'
+			before: 'Register for Activities',
+			class: 'error'
 		});
 	}
 	if (paymentType.value === 'select_method') {
@@ -384,6 +421,12 @@ const onSubmit = (e) => {
 	if (errors.length === 0) { // If all is ready, then submit.
 		nodes.form.action = 'index.html';
 		nodes.form.submit(); //form submission
+	} else {
+		handleCcSelection(paymentType);
+		jobRoleSelection(basicInfo[0]);
+		jobRoleSelection(basicInfo[1]);
+		nodes.customError(basicInfo[0], 'Please choose a better name.');
+		nodes.customError(basicInfo[1], 'ERROR ! please check your email formate');
 	}
 };
 
