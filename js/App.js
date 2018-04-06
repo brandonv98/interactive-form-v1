@@ -3,7 +3,7 @@
 //^		--------------------------------------------------------------------------------
 //^		1. Quick tips => mkNode(); = nodes.mkNode(tagName, ParentNode, 'optional:{innerHTML}');
 //^		2. findParent(); => nodes.findParent(	element, 'tagName' ); Tag name is passed to the parent you are seeking to find.
-//^
+//^		3.
 ==========================================================================================================*/
 "use strict";
 const sectionsHide = () => {
@@ -58,9 +58,6 @@ const nodeConfig = (f) => { // Traverse the DOM to select needed nodes.
 		typeError(NODE, errorColor = 'red') {
 			this.NODE = NODE;
 			this.errorColor = errorColor;
-			// if (errorColor) {
-			// this.customError(NODE);
-			// }
 			return NODE.setAttribute('style', `border: 3px solid ${errorColor}; border-radius: 8px;`);
 		},
 		isValue(inputValue) {
@@ -110,7 +107,7 @@ const nodeConfig = (f) => { // Traverse the DOM to select needed nodes.
 	return exportNodes;
 };
 const nodes = nodeConfig(); // Save our config nodes & methods.
-const errorTypes = (opacity = 0.35) => {
+const errorTypes = (opacity = 0.5) => {
 	const errorTypes = {
 		success: `rgba(144, 238, 144, ${opacity})`,
 		error: `rgba(255, 0, 0, ${opacity})`,
