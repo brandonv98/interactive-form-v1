@@ -1,5 +1,5 @@
 /*==========================================================================================================
-//^		To understand all syntax used in this project please view README.md section one.
+//^		To understand all syntax used in this project please view README.md section one. // Comeing soon....
 //^		--------------------------------------------------------------------------------
 //^		1. Quick tips => mkNode(); = nodes.mkNode(tagName, ParentNode, 'optional:{innerHTML}');
 //^		2. findParent(); => nodes.findParent(	element, 'tagName' ); Tag name is passed to the parent you are seeking to find.
