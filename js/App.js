@@ -395,7 +395,7 @@ const onSubmit = (e) => {
 	} else {
 		handleRequiredFields(activities, null, true); // Add required fields.
 		activities[1].parentNode.parentNode.firstElementChild.innerHTML = nodes.notifyUser({
-			name: '--Please select at least one.',
+			name: '&#9747; ERROR ! Please select at least one.',
 			before: 'Register for Activities',
 			class: 'error'
 		});
@@ -411,7 +411,7 @@ const onSubmit = (e) => {
 		handleRequiredFields(nodes.fieldset[3].querySelectorAll('INPUT'), 0);
 	} else {
 		const isCC = url !== null;
-		isCC ? window.open(nodes.url, '_blank') : nodes.typeError(paymentType, errorTypes(.5).error);
+		isCC ? console.log('Nope') : nodes.typeError(paymentType, errorTypes(.5).error);
 	}
 	const errors = document.querySelectorAll('[required]');
 	if (errors.length === 0) { // If all is ready, then submit.
@@ -421,8 +421,8 @@ const onSubmit = (e) => {
 		handleCcSelection(paymentType);
 		jobRoleSelection(basicInfo[0]);
 		jobRoleSelection(basicInfo[1]);
-		nodes.customError(basicInfo[0], 'Please choose a better name.');
-		nodes.customError(basicInfo[1], 'ERROR ! please check your email formate');
+		nodes.customError(basicInfo[0], '&#9747; ERROR ! Please choose a better name.');
+		nodes.customError(basicInfo[1], '&#9747; ERROR ! please check your email formate');
 	}
 };
 
